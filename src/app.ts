@@ -1,8 +1,19 @@
 import express from 'express';
+import helmet from 'helmet';
 import authRoutes from './infrastructure/adapters/inputs/http/routes/authRoutes';
 import { errorHandler } from './core/middlewares/errorHandler';
+import { corsMiddleware } from './core/middlewares/corsMiddleware';
 
 const app = express();
+
+// Desactivar cabecera X-Powered-By por seguridad
+app.disable('x-powered-by');
+
+// Registrar Helmet para inyectar cabeceras de seguridad
+app.use(helmet());
+
+// Configurar CORS mediante middleware independiente
+app.use(corsMiddleware);
 
 // Middleware para parsear cuerpos JSON
 app.use(express.json());
