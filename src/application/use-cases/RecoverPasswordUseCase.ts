@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { NotFoundException } from '../../domain/exceptions/BusinessException';
+import { BusinessException, NotFoundException } from '../../domain/exceptions/BusinessException';
 import { RecoverPasswordCommand, RecoverPasswordUseCasePort } from '../ports/inputs/AuthUseCasesPort';
 import { UserRepositoryPort } from '../ports/outputs/UserRepositoryPort';
 
@@ -7,6 +7,9 @@ export class RecoverPasswordUseCase implements RecoverPasswordUseCasePort {
   constructor(private readonly userRepository: UserRepositoryPort) {}
 
   async execute(command: RecoverPasswordCommand): Promise<string> {
+    if (!command.email || typeof command.email !== 'string') {
+      throw new BusinessException('El correo electrónico es requerido y debe ser un texto.', 400);
+    }
     const email = command.email.trim().toLowerCase();
 
     // Buscar al usuario por email

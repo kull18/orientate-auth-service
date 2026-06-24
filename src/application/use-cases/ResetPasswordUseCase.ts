@@ -10,8 +10,11 @@ export class ResetPasswordUseCase implements ResetPasswordUseCasePort {
   ) {}
 
   async execute(command: ResetPasswordCommand): Promise<void> {
-    if (!command.newPassword) {
-      throw new BusinessException('La nueva contraseña es requerida.', 400);
+    if (!command.token || typeof command.token !== 'string') {
+      throw new BusinessException('El token de recuperación es requerido y debe ser un texto.', 400);
+    }
+    if (!command.newPassword || typeof command.newPassword !== 'string') {
+      throw new BusinessException('La nueva contraseña es requerida y debe ser un texto.', 400);
     }
 
     const token = command.token.trim();

@@ -12,8 +12,17 @@ export class RegisterUserUseCase implements RegisterUserUseCasePort {
   ) {}
 
   async execute(command: RegisterCommand): Promise<UserResponseDTO> {
-    if (!command.password) {
-      throw new BusinessException('La contraseña es requerida para el registro.', 400);
+    if (!command.email || typeof command.email !== 'string') {
+      throw new BusinessException('El correo electrónico es requerido para el registro y debe ser un texto.', 400);
+    }
+    if (!command.name || typeof command.name !== 'string') {
+      throw new BusinessException('El nombre es requerido para el registro y debe ser un texto.', 400);
+    }
+    if (!command.password || typeof command.password !== 'string') {
+      throw new BusinessException('La contraseña es requerida para el registro y debe ser un texto.', 400);
+    }
+    if (!command.roleName || typeof command.roleName !== 'string') {
+      throw new BusinessException('El rol es requerido para el registro y debe ser un texto.', 400);
     }
 
     const email = command.email.trim().toLowerCase();

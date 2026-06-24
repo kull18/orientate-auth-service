@@ -12,8 +12,11 @@ export class LoginUserUseCase implements LoginUserUseCasePort {
   ) {}
 
   async execute(command: LoginCommand): Promise<{ token: string; user: UserResponseDTO }> {
-    if (!command.password) {
-      throw new BusinessException('La contraseña es requerida para el inicio de sesión.', 400);
+    if (!command.email || typeof command.email !== 'string') {
+      throw new BusinessException('El correo electrónico es requerido para el inicio de sesión y debe ser un texto.', 400);
+    }
+    if (!command.password || typeof command.password !== 'string') {
+      throw new BusinessException('La contraseña es requerida para el inicio de sesión y debe ser un texto.', 400);
     }
 
     const email = command.email.trim().toLowerCase();
