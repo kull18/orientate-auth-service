@@ -11,6 +11,9 @@ export class UpdateUserRoleUseCase implements UpdateUserRoleUseCasePort {
       throw new NotFoundException(`usuario con ID ${command.userId}`);
     }
 
+    if (!command.roleName || typeof command.roleName !== 'string') {
+      throw new BusinessException('El nombre de rol es requerido y debe ser un texto.', 400);
+    }
     const roleName = command.roleName.trim().toLowerCase();
 
     // Roles permitidos según los requisitos del MVP

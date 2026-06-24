@@ -13,6 +13,9 @@ export class UpdateUserProfileUseCase implements UpdateUserProfileUseCasePort {
 
     // Actualizar email si se proporciona
     if (command.email !== undefined) {
+      if (typeof command.email !== 'string') {
+        throw new BusinessException('El correo electrónico debe ser un texto.', 400);
+      }
       const email = command.email.trim().toLowerCase();
       if (email !== user.email) {
         // Validar formato de email
@@ -32,6 +35,9 @@ export class UpdateUserProfileUseCase implements UpdateUserProfileUseCasePort {
 
     // Actualizar nombre si se proporciona
     if (command.name !== undefined) {
+      if (typeof command.name !== 'string') {
+        throw new BusinessException('El nombre debe ser un texto.', 400);
+      }
       const name = command.name.trim();
       if (name.length < 2) {
         throw new BusinessException('El nombre debe tener al menos 2 caracteres.', 400);
