@@ -1,6 +1,11 @@
+import http from 'http';
+import { Server } from 'socket.io';
 import app from './app';
 import { env } from './core/config/env';
 import { pgPool } from './core/database/pgPool';
+import { initSocketIo } from './infrastructure/adapters/inputs/ws/SocketIoAdapter';
+
+let server: http.Server;
 
 const startServer = async () => {
   try {
@@ -9,9 +14,24 @@ const startServer = async () => {
     console.log('Pool de conexiones de PostgreSQL inicializado correctamente.');
     client.release();
 
-    // Iniciar escucha del servidor HTTP
-    app.listen(env.PORT, () => {
-      console.log(`[Oriéntate+ Auth Service] Microservicio iniciado con éxito en http://localhost:${env.PORT}`);
+    server = http.createServer(app);
+
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',')
+      : ['http://localhost:3000', 'http://localhost:5173'];
+
+    // Inicializar WebSocket
+    const io = new Server(server, {
+      cors: {
+        origin: allowedOrigins,
+        methods: ["GET", "POST"]
+      }
+    });
+    initSocketIo(io);
+
+    // Iniciar escucha del servidor HTTP y WebSocket
+    server.listen(env.PORT, () => {
+      console.log(`[Oriéntate+ Auth Service] Servidor HTTP y WebSocket corriendo en puerto ${env.PORT}`);
     });
   } catch (error) {
     console.error('Error fatal al iniciar el servidor:', error);
@@ -21,7 +41,10 @@ const startServer = async () => {
 
 // Capturar señales de terminación para cerrar el pool de base de datos de forma limpia
 const gracefulShutdown = async () => {
-  console.log('Cerrando pool de conexiones de base de datos...');
+  console.log('Cerrando pool de conexiones de base de datos y servidor...');
+  if (server) {
+    server.close();
+  }
   await pgPool.end();
   process.exit(0);
 };
@@ -30,3 +53,4 @@ process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
 startServer();
+

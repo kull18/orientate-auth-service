@@ -55,3 +55,21 @@ ON CONFLICT (name) DO NOTHING;
 -- 7. Migración de Base de Datos Existente
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_expires TIMESTAMP WITH TIME ZONE;
+
+-- 8. Tabla para Mensajes de Chat
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    sender_id UUID NOT NULL,
+    receiver_id UUID NOT NULL,
+    message_text TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_chat_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_chat_receiver FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Índices compuestos para acelerar la consulta del historial de chat y chat reciente
+CREATE INDEX IF NOT EXISTS idx_chat_messages_sender_receiver ON chat_messages(sender_id, receiver_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_receiver_created ON chat_messages(receiver_id, created_at DESC);
+

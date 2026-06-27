@@ -1,6 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import authRoutes from './infrastructure/adapters/inputs/http/routes/authRoutes';
+import chatRoutes from './infrastructure/adapters/inputs/http/routes/chatRoutes';
 import { errorHandler } from './core/middlewares/errorHandler';
 import { corsMiddleware } from './core/middlewares/corsMiddleware';
 
@@ -30,7 +31,11 @@ app.get('/health', (req, res) => {
 // Registrar rutas bajo el prefijo api/v1/auth
 app.use('/api/v1/auth', authRoutes);
 
+// Registrar rutas bajo el prefijo api/v1/chat
+app.use('/api/v1/chat', chatRoutes);
+
 // Middleware global para el manejo de excepciones
 app.use(errorHandler);
 
 export default app;
+
