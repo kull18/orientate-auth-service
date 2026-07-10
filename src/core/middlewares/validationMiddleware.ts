@@ -6,7 +6,7 @@ const EMAIL_REGEXP = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const INTEGER_REGEXP = /^\d+$/;
 
 export const validateRegister = (req: Request, res: Response, next: NextFunction): void => {
-  const { email, name, password, roleName, role } = req.body;
+  const { email, name, password, roleName, role, privacyAccepted } = req.body;
   const finalRoleName = roleName || role;
 
   if (!email || typeof email !== 'string' || !EMAIL_REGEXP.test(email.trim())) {
@@ -20,6 +20,9 @@ export const validateRegister = (req: Request, res: Response, next: NextFunction
   }
   if (!finalRoleName || typeof finalRoleName !== 'string') {
     return next(new BusinessException('El rol es requerido.', 400));
+  }
+  if (privacyAccepted !== true && privacyAccepted !== 'true') {
+    return next(new BusinessException('Debe aceptar el aviso de privacidad para poder registrarse.', 400));
   }
 
   next();

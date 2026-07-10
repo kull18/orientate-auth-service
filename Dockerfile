@@ -11,6 +11,7 @@ COPY tsconfig.json ./
 COPY src/ ./src/
 
 RUN npm run build
+RUN mkdir -p dist/core/database && cp src/core/database/init.sql dist/core/database/init.sql
 
 # --- Etapa 2: Ejecución en Producción ---
 FROM node:20-alpine AS runner

@@ -49,6 +49,8 @@ export class LoginUserUseCase implements LoginUserUseCasePort {
       userId: user.id,
       email: user.email,
       role: roleName,
+      universityName: user.universityName,
+      verificationStatus: user.verificationStatus,
     });
 
     const userDto: UserResponseDTO = {
@@ -59,6 +61,13 @@ export class LoginUserUseCase implements LoginUserUseCasePort {
       isActive: user.isActive,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      privacyAccepted: user.privacyAccepted,
+      privacyAcceptedAt: user.privacyAcceptedAt,
+      avatarUrl: user.avatarUrl,
+      claimedCct: user.claimedCct,
+      rfc: user.rfc,
+      universityName: user.universityName,
+      verificationStatus: user.verificationStatus,
     };
 
     return { token, user: userDto };

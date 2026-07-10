@@ -26,6 +26,9 @@ export class GetUserProfileUseCase implements GetUserProfileUseCasePort {
       isActive: user.isActive,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      privacyAccepted: user.privacyAccepted,
+      privacyAcceptedAt: user.privacyAcceptedAt,
+      avatarUrl: user.avatarUrl,
     };
   }
 }

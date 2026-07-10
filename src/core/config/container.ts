@@ -18,11 +18,13 @@ import { SaveMessageUseCase } from '../../application/use-cases/SaveMessageUseCa
 import { GetChatHistoryUseCase } from '../../application/use-cases/GetChatHistoryUseCase';
 import { MarkMessagesAsReadUseCase } from '../../application/use-cases/MarkMessagesAsReadUseCase';
 import { GetRecentContactsUseCase } from '../../application/use-cases/GetRecentContactsUseCase';
+import { S3Service } from '../../infrastructure/adapters/outputs/s3/S3Service';
 import { ChatController } from '../../infrastructure/adapters/inputs/http/controllers/ChatController';
 
 // 1. Instanciar herramientas y servicios transversales (Core)
 const passwordHasher = new Argon2Hasher();
 const tokenService = new JwtTokenService();
+const s3Service = new S3Service();
 
 // 2. Instanciar adaptadores de salida (Persistencia)
 const userRepository = new PostgresUserRepository(pgPool);
@@ -53,7 +55,9 @@ const authController = new AuthController(
   resetPasswordUseCase,
   updateProfileUseCase,
   listRolesUseCase,
-  updateRoleUseCase
+  updateRoleUseCase,
+  s3Service,
+  userRepository
 );
 
 const chatController = new ChatController(

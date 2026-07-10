@@ -27,6 +27,9 @@ router.patch('/users/:userId/role', authMiddleware, roleMiddleware(['admin']), v
 // Endpoints generales protegidos por JWT
 router.get('/me', authMiddleware, container.authController.getProfile);
 router.patch('/me', authMiddleware, validateUpdateProfile, container.authController.updateProfile);
+router.post('/universities/claim', authMiddleware, container.authController.claimUniversity);
+router.get('/users/avatar-upload-url', container.authController.getAvatarUploadUrl);
+router.put('/users/avatar', authMiddleware, container.authController.updateAvatar);
 router.post('/logout', authMiddleware, container.authController.logout);
 
 export default router;

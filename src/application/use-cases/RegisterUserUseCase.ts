@@ -24,6 +24,9 @@ export class RegisterUserUseCase implements RegisterUserUseCasePort {
     if (!command.roleName || typeof command.roleName !== 'string') {
       throw new BusinessException('El rol es requerido para el registro y debe ser un texto.', 400);
     }
+    if (command.privacyAccepted !== true) {
+      throw new BusinessException('Debe aceptar el aviso de privacidad para registrarse.', 400);
+    }
 
     const email = command.email.trim().toLowerCase();
     const name = command.name.trim();
@@ -59,7 +62,12 @@ export class RegisterUserUseCase implements RegisterUserUseCasePort {
       roleId,
       true, // isActive por defecto true
       new Date(),
-      new Date()
+      new Date(),
+      null, // passwordResetToken
+      null, // passwordResetExpires
+      true, // privacyAccepted
+      new Date(), // privacyAcceptedAt
+      command.avatarUrl || null
     );
 
     // Persistir usuario
@@ -73,6 +81,13 @@ export class RegisterUserUseCase implements RegisterUserUseCasePort {
       isActive: savedUser.isActive,
       createdAt: savedUser.createdAt,
       updatedAt: savedUser.updatedAt,
+      privacyAccepted: savedUser.privacyAccepted,
+      privacyAcceptedAt: savedUser.privacyAcceptedAt,
+      avatarUrl: savedUser.avatarUrl,
+      claimedCct: savedUser.claimedCct,
+      rfc: savedUser.rfc,
+      universityName: savedUser.universityName,
+      verificationStatus: savedUser.verificationStatus,
     };
   }
 }

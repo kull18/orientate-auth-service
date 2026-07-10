@@ -3,6 +3,10 @@ export interface RegisterCommand {
   name: string;
   password?: string; // raw password
   roleName: string;
+  privacyAccepted?: boolean;
+  avatarUrl?: string;
+  claimedCct?: string;
+  rfc?: string;
 }
 
 export interface LoginCommand {
@@ -38,6 +42,13 @@ export interface UserResponseDTO {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  privacyAccepted: boolean;
+  privacyAcceptedAt?: Date | null;
+  avatarUrl?: string | null;
+  claimedCct?: string | null;
+  rfc?: string | null;
+  universityName?: string | null;
+  verificationStatus?: string | null;
 }
 
 export interface RoleDTO {
