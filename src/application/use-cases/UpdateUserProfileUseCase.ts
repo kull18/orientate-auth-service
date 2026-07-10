@@ -62,6 +62,9 @@ export class UpdateUserProfileUseCase implements UpdateUserProfileUseCasePort {
       isActive: updatedUser.isActive,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
+      privacyAccepted: updatedUser.privacyAccepted,
+      privacyAcceptedAt: updatedUser.privacyAcceptedAt,
+      avatarUrl: updatedUser.avatarUrl,
     };
   }
 }

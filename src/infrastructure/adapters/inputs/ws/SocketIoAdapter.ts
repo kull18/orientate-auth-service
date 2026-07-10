@@ -47,6 +47,7 @@ export const initSocketIo = (io: Server): void => {
     socket.on('send_message', async (data: { receiverId: string; text: string }, callback?: Function) => {
       try {
         const { receiverId, text } = data;
+        console.log(`[SOCKET] Evento send_message recibido de ${userId} para ${receiverId}: "${text}"`);
         if (!receiverId || typeof receiverId !== 'string') {
           socket.emit('error', { message: 'El receiverId es requerido y debe ser texto.' });
           return;
@@ -82,6 +83,7 @@ export const initSocketIo = (io: Server): void => {
           callback({ status: 'ok', message: msgPayload });
         }
       } catch (error: any) {
+        console.error(`[ERROR] WebSocket send_message de ${userId} a ${data?.receiverId}:`, error);
         socket.emit('error', { message: error.message || 'Error al procesar el mensaje.' });
       }
     });
@@ -125,6 +127,7 @@ export const initSocketIo = (io: Server): void => {
           receiverId: userId,
         });
       } catch (error: any) {
+        console.error(`[ERROR] WebSocket read_messages de ${userId} para ${data?.senderId}:`, error);
         socket.emit('error', { message: error.message || 'Error al marcar mensajes como leídos.' });
       }
     });

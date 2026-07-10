@@ -7,6 +7,9 @@ import { corsMiddleware } from './core/middlewares/corsMiddleware';
 
 const app = express();
 
+// Configurar Express para confiar en proxies (Nginx) para express-rate-limit
+app.set('trust proxy', 1);
+
 // Desactivar cabecera X-Powered-By por seguridad
 app.disable('x-powered-by');
 

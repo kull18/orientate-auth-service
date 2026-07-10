@@ -11,7 +11,14 @@ export class User {
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
     public passwordResetToken?: string | null,
-    public passwordResetExpires?: Date | null
+    public passwordResetExpires?: Date | null,
+    public privacyAccepted: boolean = false,
+    public privacyAcceptedAt?: Date | null,
+    public avatarUrl?: string | null,
+    public claimedCct?: string | null,
+    public rfc?: string | null,
+    public universityName?: string | null,
+    public verificationStatus: string = 'UNVERIFIED'
   ) {
     this.validateEmail(email);
     this.validateName(name);

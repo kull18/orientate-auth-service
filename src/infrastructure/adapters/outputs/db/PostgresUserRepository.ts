@@ -7,8 +7,8 @@ export class PostgresUserRepository implements UserRepositoryPort {
 
   async save(user: User): Promise<User> {
     const query = `
-      INSERT INTO users (id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      INSERT INTO users (id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires, privacy_accepted, privacy_accepted_at, avatar_url, claimed_cct, rfc, university_name, verification_status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
       ON CONFLICT (id) DO UPDATE SET
         email = EXCLUDED.email,
         password_hash = EXCLUDED.password_hash,
@@ -17,8 +17,15 @@ export class PostgresUserRepository implements UserRepositoryPort {
         is_active = EXCLUDED.is_active,
         password_reset_token = EXCLUDED.password_reset_token,
         password_reset_expires = EXCLUDED.password_reset_expires,
+        privacy_accepted = EXCLUDED.privacy_accepted,
+        privacy_accepted_at = EXCLUDED.privacy_accepted_at,
+        avatar_url = EXCLUDED.avatar_url,
+        claimed_cct = EXCLUDED.claimed_cct,
+        rfc = EXCLUDED.rfc,
+        university_name = EXCLUDED.university_name,
+        verification_status = EXCLUDED.verification_status,
         updated_at = NOW()
-      RETURNING id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires;
+      RETURNING id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires, privacy_accepted, privacy_accepted_at, avatar_url, claimed_cct, rfc, university_name, verification_status;
     `;
 
     const values = [
@@ -32,6 +39,13 @@ export class PostgresUserRepository implements UserRepositoryPort {
       user.updatedAt,
       user.passwordResetToken || null,
       user.passwordResetExpires || null,
+      user.privacyAccepted,
+      user.privacyAcceptedAt || null,
+      user.avatarUrl || null,
+      user.claimedCct || null,
+      user.rfc || null,
+      user.universityName || null,
+      user.verificationStatus,
     ];
 
     const res = await this.pool.query(query, values);
@@ -46,13 +60,20 @@ export class PostgresUserRepository implements UserRepositoryPort {
       row.created_at,
       row.updated_at,
       row.password_reset_token,
-      row.password_reset_expires
+      row.password_reset_expires,
+      row.privacy_accepted,
+      row.privacy_accepted_at,
+      row.avatar_url,
+      row.claimed_cct,
+      row.rfc,
+      row.university_name,
+      row.verification_status
     );
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const query = `
-      SELECT id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires
+      SELECT id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires, privacy_accepted, privacy_accepted_at, avatar_url, claimed_cct, rfc, university_name, verification_status
       FROM users
       WHERE email = $1;
     `;
@@ -71,13 +92,20 @@ export class PostgresUserRepository implements UserRepositoryPort {
       row.created_at,
       row.updated_at,
       row.password_reset_token,
-      row.password_reset_expires
+      row.password_reset_expires,
+      row.privacy_accepted,
+      row.privacy_accepted_at,
+      row.avatar_url,
+      row.claimed_cct,
+      row.rfc,
+      row.university_name,
+      row.verification_status
     );
   }
 
   async findById(id: string): Promise<User | null> {
     const query = `
-      SELECT id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires
+      SELECT id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires, privacy_accepted, privacy_accepted_at, avatar_url, claimed_cct, rfc, university_name, verification_status
       FROM users
       WHERE id = $1;
     `;
@@ -96,7 +124,14 @@ export class PostgresUserRepository implements UserRepositoryPort {
       row.created_at,
       row.updated_at,
       row.password_reset_token,
-      row.password_reset_expires
+      row.password_reset_expires,
+      row.privacy_accepted,
+      row.privacy_accepted_at,
+      row.avatar_url,
+      row.claimed_cct,
+      row.rfc,
+      row.university_name,
+      row.verification_status
     );
   }
 
@@ -128,7 +163,7 @@ export class PostgresUserRepository implements UserRepositoryPort {
 
   async findByResetToken(token: string): Promise<User | null> {
     const query = `
-      SELECT id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires
+      SELECT id, email, password_hash, name, role_id, is_active, created_at, updated_at, password_reset_token, password_reset_expires, privacy_accepted, privacy_accepted_at, avatar_url, claimed_cct, rfc, university_name, verification_status
       FROM users
       WHERE password_reset_token = $1;
     `;
@@ -147,7 +182,14 @@ export class PostgresUserRepository implements UserRepositoryPort {
       row.created_at,
       row.updated_at,
       row.password_reset_token,
-      row.password_reset_expires
+      row.password_reset_expires,
+      row.privacy_accepted,
+      row.privacy_accepted_at,
+      row.avatar_url,
+      row.claimed_cct,
+      row.rfc,
+      row.university_name,
+      row.verification_status
     );
   }
 
@@ -159,5 +201,14 @@ export class PostgresUserRepository implements UserRepositoryPort {
     `;
     const res = await this.pool.query(query);
     return res.rows;
+  }
+
+  async updateAvatarUrl(userId: string, avatarUrl: string): Promise<void> {
+    const query = `
+      UPDATE users
+      SET avatar_url = $2, updated_at = NOW()
+      WHERE id = $1;
+    `;
+    await this.pool.query(query, [userId, avatarUrl]);
   }
 }

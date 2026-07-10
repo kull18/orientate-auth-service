@@ -2,6 +2,8 @@ export interface TokenPayload {
   userId: string;
   email: string;
   role: string;
+  universityName?: string | null;
+  verificationStatus?: string | null;
 }
 
 export interface TokenServicePort {

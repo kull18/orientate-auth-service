@@ -17,8 +17,11 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(150) NOT NULL,
     role_id UUID NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
+    is_premium BOOLEAN DEFAULT FALSE,
     password_reset_token VARCHAR(255),
     password_reset_expires TIMESTAMP WITH TIME ZONE,
+    privacy_accepted BOOLEAN DEFAULT FALSE,
+    privacy_accepted_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     
@@ -72,4 +75,26 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 -- Índices compuestos para acelerar la consulta del historial de chat y chat reciente
 CREATE INDEX IF NOT EXISTS idx_chat_messages_sender_receiver ON chat_messages(sender_id, receiver_id);
 CREATE INDEX IF NOT EXISTS idx_chat_messages_receiver_created ON chat_messages(receiver_id, created_at DESC);
+
+-- 9. Aceptación del aviso de privacidad (Migración para bases de datos existentes)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_accepted BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_accepted_at TIMESTAMP WITH TIME ZONE;
+
+-- 10. Tabla de Pagos y Suscripciones (Mercado Pago)
+CREATE TABLE IF NOT EXISTS payments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL,
+    preference_id VARCHAR(255),
+    payment_id VARCHAR(255),
+    amount NUMERIC(10, 2) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    external_reference VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_payment_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_premium BOOLEAN DEFAULT FALSE;
+
 
