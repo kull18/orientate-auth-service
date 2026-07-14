@@ -113,3 +113,25 @@ export interface GetAdminStatsUseCasePort {
   execute(): Promise<UserMetricsDTO>;
 }
 
+export interface PendingUniversityDTO {
+  id: string;
+  email: string;
+  name: string;
+  universityName: string;
+  claimedCct: string;
+  rfc: string;
+  registeredAt: Date;
+}
+
+export interface GetPendingUniversitiesUseCasePort {
+  execute(): Promise<PendingUniversityDTO[]>;
+}
+
+export interface ApproveUniversityUseCasePort {
+  execute(userId: string): Promise<void>;
+}
+
+export interface RejectUniversityUseCasePort {
+  execute(userId: string): Promise<void>;
+}
+

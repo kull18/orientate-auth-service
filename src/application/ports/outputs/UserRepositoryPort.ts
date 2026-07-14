@@ -11,4 +11,6 @@ export interface UserRepositoryPort {
   findAllRoles(): Promise<{ id: string; name: string; description: string | null }[]>;
   updateAvatarUrl(userId: string, avatarUrl: string): Promise<void>;
   getUserMetrics(): Promise<UserMetricsDTO>;
+  findPendingUniversities(): Promise<User[]>;
+  updateVerificationStatus(userId: string, status: string, isPremium: boolean): Promise<void>;
 }

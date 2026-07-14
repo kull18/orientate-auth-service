@@ -356,4 +356,55 @@ export class PostgresUserRepository implements UserRepositoryPort {
       throw new Error(`Error fetching unified admin metrics: ${error.message}`);
     }
   }
+
+  async findPendingUniversities(): Promise<User[]> {
+    const query = `
+      SELECT u.*, r.name as role_name 
+      FROM users u
+      JOIN roles r ON u.role_id = r.id
+      WHERE r.name = 'universidad' AND u.verification_status = 'PENDING'
+      ORDER BY u.created_at ASC;
+    `;
+    try {
+      const res = await this.pool.query(query);
+      return res.rows.map(row => this.mapRowToUser(row));
+    } catch (error: any) {
+      throw new Error(`Error fetching pending universities: ${error.message}`);
+    }
+  }
+
+  async updateVerificationStatus(userId: string, status: string, isPremium: boolean): Promise<void> {
+    const query = `
+      UPDATE users 
+      SET verification_status = $1, is_premium = $2, updated_at = NOW() 
+      WHERE id = $3;
+    `;
+    try {
+      await this.pool.query(query, [status, isPremium, userId]);
+    } catch (error: any) {
+      throw new Error(`Error updating verification status: ${error.message}`);
+    }
+  }
+
+  private mapRowToUser(row: any): User {
+    return new User(
+      row.id,
+      row.email,
+      row.password_hash,
+      row.name,
+      row.role_id,
+      row.is_active,
+      row.created_at,
+      row.updated_at,
+      row.password_reset_token,
+      row.password_reset_expires,
+      row.privacy_accepted,
+      row.privacy_accepted_at,
+      row.avatar_url,
+      row.claimed_cct,
+      row.rfc,
+      row.university_name,
+      row.verification_status
+    );
+  }
 }

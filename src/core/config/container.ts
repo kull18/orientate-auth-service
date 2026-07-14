@@ -11,6 +11,9 @@ import { UpdateUserProfileUseCase } from '../../application/use-cases/UpdateUser
 import { ListRolesUseCase } from '../../application/use-cases/ListRolesUseCase';
 import { UpdateUserRoleUseCase } from '../../application/use-cases/UpdateUserRoleUseCase';
 import { GetAdminStatsUseCase } from '../../application/use-cases/GetAdminStatsUseCase';
+import { GetPendingUniversitiesUseCase } from '../../application/use-cases/GetPendingUniversitiesUseCase';
+import { ApproveUniversityUseCase } from '../../application/use-cases/ApproveUniversityUseCase';
+import { RejectUniversityUseCase } from '../../application/use-cases/RejectUniversityUseCase';
 import { AuthController } from '../../infrastructure/adapters/inputs/http/controllers/AuthController';
 import { PostgresChatRepository } from '../../infrastructure/adapters/outputs/db/PostgresChatRepository';
 import { SaveMessageUseCase } from '../../application/use-cases/SaveMessageUseCase';
@@ -39,6 +42,9 @@ const updateProfileUseCase = new UpdateUserProfileUseCase(userRepository);
 const listRolesUseCase = new ListRolesUseCase(userRepository);
 const updateRoleUseCase = new UpdateUserRoleUseCase(userRepository);
 const getAdminStatsUseCase = new GetAdminStatsUseCase(userRepository);
+const getPendingUniversitiesUseCase = new GetPendingUniversitiesUseCase(userRepository);
+const approveUniversityUseCase = new ApproveUniversityUseCase(userRepository);
+const rejectUniversityUseCase = new RejectUniversityUseCase(userRepository);
 
 // Chat use cases
 const saveMessageUseCase = new SaveMessageUseCase(chatRepository, userRepository);
@@ -57,6 +63,9 @@ const authController = new AuthController(
   listRolesUseCase,
   updateRoleUseCase,
   getAdminStatsUseCase,
+  getPendingUniversitiesUseCase,
+  approveUniversityUseCase,
+  rejectUniversityUseCase,
   s3Service,
   userRepository
 );
