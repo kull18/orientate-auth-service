@@ -88,3 +88,28 @@ export interface ListRolesUseCasePort {
 export interface UpdateUserRoleUseCasePort {
   execute(command: UpdateUserRoleCommand): Promise<UserResponseDTO>;
 }
+
+export interface UserMetricsDTO {
+  userMetrics: {
+    activeStudents: number;
+    registeredCounselors: number;
+    premiumUniversities: number;
+  };
+  systemPerformance: {
+    messagesToday: number;
+    messagesThisMonth: number;
+    dbStatus: string;
+    qdrantStatus: string;
+  };
+  appointments: {
+    scheduled: number;
+    completed: number;
+    cancelled: number;
+  };
+  monthlySessions: { month: string; value: number }[];
+}
+
+export interface GetAdminStatsUseCasePort {
+  execute(): Promise<UserMetricsDTO>;
+}
+

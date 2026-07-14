@@ -1,4 +1,4 @@
-import { pgPool } from '../database/pgPool';
+import { pgPool, guidancePool } from '../database/pgPool';
 import { Argon2Hasher } from '../security/argon2Hasher';
 import { JwtTokenService } from '../security/jwtTokenService';
 import { PostgresUserRepository } from '../../infrastructure/adapters/outputs/db/PostgresUserRepository';
@@ -10,9 +10,8 @@ import { ResetPasswordUseCase } from '../../application/use-cases/ResetPasswordU
 import { UpdateUserProfileUseCase } from '../../application/use-cases/UpdateUserProfileUseCase';
 import { ListRolesUseCase } from '../../application/use-cases/ListRolesUseCase';
 import { UpdateUserRoleUseCase } from '../../application/use-cases/UpdateUserRoleUseCase';
+import { GetAdminStatsUseCase } from '../../application/use-cases/GetAdminStatsUseCase';
 import { AuthController } from '../../infrastructure/adapters/inputs/http/controllers/AuthController';
-
-// Chat imports
 import { PostgresChatRepository } from '../../infrastructure/adapters/outputs/db/PostgresChatRepository';
 import { SaveMessageUseCase } from '../../application/use-cases/SaveMessageUseCase';
 import { GetChatHistoryUseCase } from '../../application/use-cases/GetChatHistoryUseCase';
@@ -27,7 +26,7 @@ const tokenService = new JwtTokenService();
 const s3Service = new S3Service();
 
 // 2. Instanciar adaptadores de salida (Persistencia)
-const userRepository = new PostgresUserRepository(pgPool);
+const userRepository = new PostgresUserRepository(pgPool, guidancePool);
 const chatRepository = new PostgresChatRepository(pgPool);
 
 // 3. Instanciar casos de uso (Capa de Aplicación), inyectando los puertos requeridos
@@ -39,6 +38,7 @@ const resetPasswordUseCase = new ResetPasswordUseCase(userRepository, passwordHa
 const updateProfileUseCase = new UpdateUserProfileUseCase(userRepository);
 const listRolesUseCase = new ListRolesUseCase(userRepository);
 const updateRoleUseCase = new UpdateUserRoleUseCase(userRepository);
+const getAdminStatsUseCase = new GetAdminStatsUseCase(userRepository);
 
 // Chat use cases
 const saveMessageUseCase = new SaveMessageUseCase(chatRepository, userRepository);
@@ -56,6 +56,7 @@ const authController = new AuthController(
   updateProfileUseCase,
   listRolesUseCase,
   updateRoleUseCase,
+  getAdminStatsUseCase,
   s3Service,
   userRepository
 );

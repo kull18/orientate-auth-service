@@ -8,7 +8,8 @@ import {
   ResetPasswordUseCasePort,
   UpdateUserProfileUseCasePort,
   ListRolesUseCasePort,
-  UpdateUserRoleUseCasePort
+  UpdateUserRoleUseCasePort,
+  GetAdminStatsUseCasePort
 } from '../../../../../application/ports/inputs/AuthUseCasesPort';
 import { S3Service } from '../../../outputs/s3/S3Service';
 import { UserRepositoryPort } from '../../../../../application/ports/outputs/UserRepositoryPort';
@@ -23,6 +24,7 @@ export class AuthController {
     private readonly updateProfileUseCase: UpdateUserProfileUseCasePort,
     private readonly listRolesUseCase: ListRolesUseCasePort,
     private readonly updateRoleUseCase: UpdateUserRoleUseCasePort,
+    private readonly getAdminStatsUseCase: GetAdminStatsUseCasePort,
     private readonly s3Service: S3Service,
     private readonly userRepository: UserRepositoryPort
   ) {}
@@ -392,6 +394,19 @@ export class AuthController {
           universityName: officialUnivName,
           verificationStatus: user.verificationStatus,
         },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAdminStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const stats = await this.getAdminStatsUseCase.execute();
+      res.status(200).json({
+        status: 'success',
+        statusCode: 200,
+        data: stats,
       });
     } catch (error) {
       next(error);
