@@ -8,7 +8,11 @@ import {
   ResetPasswordUseCasePort,
   UpdateUserProfileUseCasePort,
   ListRolesUseCasePort,
-  UpdateUserRoleUseCasePort
+  UpdateUserRoleUseCasePort,
+  GetAdminStatsUseCasePort,
+  GetPendingUniversitiesUseCasePort,
+  ApproveUniversityUseCasePort,
+  RejectUniversityUseCasePort
 } from '../../../../../application/ports/inputs/AuthUseCasesPort';
 import { S3Service } from '../../../outputs/s3/S3Service';
 import { UserRepositoryPort } from '../../../../../application/ports/outputs/UserRepositoryPort';
@@ -23,6 +27,10 @@ export class AuthController {
     private readonly updateProfileUseCase: UpdateUserProfileUseCasePort,
     private readonly listRolesUseCase: ListRolesUseCasePort,
     private readonly updateRoleUseCase: UpdateUserRoleUseCasePort,
+    private readonly getAdminStatsUseCase: GetAdminStatsUseCasePort,
+    private readonly getPendingUniversitiesUseCase: GetPendingUniversitiesUseCasePort,
+    private readonly approveUniversityUseCase: ApproveUniversityUseCasePort,
+    private readonly rejectUniversityUseCase: RejectUniversityUseCasePort,
     private readonly s3Service: S3Service,
     private readonly userRepository: UserRepositoryPort
   ) {}
@@ -380,18 +388,72 @@ export class AuthController {
       user.claimedCct = cleanCct;
       user.rfc = cleanRfc;
       user.universityName = officialUnivName;
-      user.verificationStatus = 'VERIFIED';
+      user.verificationStatus = 'PENDING';
 
       await this.userRepository.save(user);
 
       res.status(200).json({
         status: 'success',
         statusCode: 200,
-        message: 'Universidad reclamada y verificada con éxito.',
+        message: 'Solicitud de verificación enviada con éxito. Un administrador revisará tu información.',
         data: {
           universityName: officialUnivName,
           verificationStatus: user.verificationStatus,
         },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAdminStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const stats = await this.getAdminStatsUseCase.execute();
+      res.status(200).json({
+        status: 'success',
+        statusCode: 200,
+        data: stats,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getPendingUniversities = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const list = await this.getPendingUniversitiesUseCase.execute();
+      res.status(200).json({
+        status: 'success',
+        statusCode: 200,
+        data: list,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  approveUniversity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { userId } = req.params;
+      await this.approveUniversityUseCase.execute(userId);
+      res.status(200).json({
+        status: 'success',
+        statusCode: 200,
+        message: 'Universidad aprobada y cuenta verificada con éxito.',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  rejectUniversity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { userId } = req.params;
+      await this.rejectUniversityUseCase.execute(userId);
+      res.status(200).json({
+        status: 'success',
+        statusCode: 200,
+        message: 'Solicitud de verificación de la universidad rechazada.',
       });
     } catch (error) {
       next(error);

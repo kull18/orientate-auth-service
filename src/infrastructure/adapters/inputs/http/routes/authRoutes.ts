@@ -23,6 +23,10 @@ router.post('/reset-password', authLimiter, validateResetPassword, container.aut
 // Endpoints administrativos protegidos por autenticación y roles específicos
 router.get('/roles', authMiddleware, roleMiddleware(['admin', 'orientador']), container.authController.listRoles);
 router.patch('/users/:userId/role', authMiddleware, roleMiddleware(['admin']), validateUserRoleUpdate, container.authController.updateUserRole);
+router.get('/admin/dashboard/stats', authMiddleware, roleMiddleware(['admin']), container.authController.getAdminStats);
+router.get('/admin/universities/pending', authMiddleware, roleMiddleware(['admin']), container.authController.getPendingUniversities);
+router.post('/admin/universities/:userId/approve', authMiddleware, roleMiddleware(['admin']), container.authController.approveUniversity);
+router.post('/admin/universities/:userId/reject', authMiddleware, roleMiddleware(['admin']), container.authController.rejectUniversity);
 
 // Endpoints generales protegidos por JWT
 router.get('/me', authMiddleware, container.authController.getProfile);

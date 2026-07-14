@@ -1,4 +1,5 @@
 import { User } from '../../../domain/entities/User';
+import { UserMetricsDTO } from '../inputs/AuthUseCasesPort';
 
 export interface UserRepositoryPort {
   save(user: User): Promise<User>;
@@ -9,4 +10,7 @@ export interface UserRepositoryPort {
   findByResetToken(token: string): Promise<User | null>;
   findAllRoles(): Promise<{ id: string; name: string; description: string | null }[]>;
   updateAvatarUrl(userId: string, avatarUrl: string): Promise<void>;
+  getUserMetrics(): Promise<UserMetricsDTO>;
+  findPendingUniversities(): Promise<User[]>;
+  updateVerificationStatus(userId: string, status: string, isPremium: boolean): Promise<void>;
 }
