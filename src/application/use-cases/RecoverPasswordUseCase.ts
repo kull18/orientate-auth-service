@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { BusinessException, NotFoundException } from '../../domain/exceptions/BusinessException';
 import { RecoverPasswordCommand, RecoverPasswordUseCasePort } from '../ports/inputs/AuthUseCasesPort';
 import { UserRepositoryPort } from '../ports/outputs/UserRepositoryPort';
+import { ResendEmailSender } from '../../infrastructure/adapters/outputs/email/ResendEmailSender';
 
 export class RecoverPasswordUseCase implements RecoverPasswordUseCasePort {
   constructor(private readonly userRepository: UserRepositoryPort) {}
@@ -28,6 +29,10 @@ export class RecoverPasswordUseCase implements RecoverPasswordUseCasePort {
 
     // Guardar en repositorio
     await this.userRepository.save(user);
+
+    // Enviar correo electrónico vía Resend
+    const emailSender = new ResendEmailSender();
+    await emailSender.sendResetPasswordEmail(email, resetToken);
 
     // Registrar en consola para que se pueda probar localmente sin servidor de correos
     console.log(`\n======================================================`);

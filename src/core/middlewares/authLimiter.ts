@@ -8,7 +8,7 @@ import rateLimit from 'express-rate-limit';
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos en milisegundos
-  max: 5, // Límite de 5 peticiones por IP por ventana
+  max: 100, // Límite de 100 peticiones por IP por ventana
   message: {
     status: 'error',
     statusCode: 429,
