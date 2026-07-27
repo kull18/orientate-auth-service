@@ -30,6 +30,7 @@ router.post('/admin/universities/:userId/reject', authMiddleware, roleMiddleware
 
 // Endpoints generales protegidos por JWT
 router.get('/me', authMiddleware, container.authController.getProfile);
+router.get('/me/vocational-profile', authMiddleware, container.authController.getStudentVocationalProfile);
 router.patch('/me', authMiddleware, validateUpdateProfile, container.authController.updateProfile);
 router.post('/universities/claim', authMiddleware, container.authController.claimUniversity);
 router.get('/users/avatar-upload-url', container.authController.getAvatarUploadUrl);

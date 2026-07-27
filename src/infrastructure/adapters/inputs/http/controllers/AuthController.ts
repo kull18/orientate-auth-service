@@ -16,6 +16,7 @@ import {
 } from '../../../../../application/ports/inputs/AuthUseCasesPort';
 import { S3Service } from '../../../outputs/s3/S3Service';
 import { UserRepositoryPort } from '../../../../../application/ports/outputs/UserRepositoryPort';
+import { env } from '../../../../../core/config/env';
 
 export class AuthController {
   constructor(
@@ -454,6 +455,98 @@ export class AuthController {
         status: 'success',
         statusCode: 200,
         message: 'Solicitud de verificación de la universidad rechazada.',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getStudentVocationalProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user || !req.user.userId) {
+        res.status(401).json({
+          status: 'error',
+          statusCode: 401,
+          message: 'No autorizado.',
+        });
+        return;
+      }
+
+      const userId = req.user.userId;
+      const authorizationHeader = req.headers.authorization;
+
+      // 1. Fetch RIASEC and vocational profile from vocational-games-service
+      let riasec: any = null;
+      let vocationalProfile: any = null;
+
+      try {
+        const gamesResponse = await fetch(`${env.GAMES_SERVICE_URL}/api/v1/games/students/results`, {
+          method: 'GET',
+          headers: {
+            'Authorization': authorizationHeader || '',
+          },
+        });
+
+        if (gamesResponse.ok) {
+          const results: any = await gamesResponse.json();
+          const resultsList = Array.isArray(results) ? results : (results.data || []);
+          if (resultsList.length > 0) {
+            const latestResult = resultsList[0];
+            riasec = latestResult.scores || latestResult.score || null;
+            
+            if (riasec && Object.keys(riasec).length > 0) {
+              const entries = Object.entries(riasec).map(([k, v]) => ({ key: k, value: Number(v) }));
+              entries.sort((a, b) => b.value - a.value);
+              const top = entries[0];
+
+              const traitLabels: Record<string, string> = {
+                'R': 'Realista (Taller / Técnico)',
+                'I': 'Investigador (Científico / Laboratorio)',
+                'A': 'Artístico (Diseño / Estudio)',
+                'S': 'Social (Servicio / Consultorio)',
+                'E': 'Emprendedor (Persuasivo / Negocios)',
+                'C': 'Convencional (Organización / Oficina)',
+              };
+
+              vocationalProfile = {
+                dominantTrait: top.key,
+                label: traitLabels[top.key] || top.key,
+                score: top.value,
+              };
+            }
+          }
+        }
+      } catch (gamesError) {
+        console.error('Error fetching games results:', gamesError);
+      }
+
+      // 2. Fetch external factors from chatbot-service
+      let externalFactors: any = null;
+
+      try {
+        const chatbotResponse = await fetch(`${env.CHATBOT_SERVICE_URL}/chat/perfil/${userId}`, {
+          method: 'GET',
+          headers: {
+            'X-Service-Key': env.SERVICE_API_KEY,
+          },
+        });
+
+        if (chatbotResponse.ok) {
+          const chatProfile: any = await chatbotResponse.json();
+          externalFactors = chatProfile.factores_externos || null;
+        }
+      } catch (chatbotError) {
+        console.error('Error fetching chatbot profile:', chatbotError);
+      }
+
+      res.status(200).json({
+        status: 'success',
+        statusCode: 200,
+        data: {
+          riasec,
+          vocationalProfile,
+          externalFactors,
+        },
       });
     } catch (error) {
       next(error);

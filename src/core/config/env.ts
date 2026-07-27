@@ -12,6 +12,9 @@ export interface EnvVariables {
   DB_NAME: string;
   JWT_SECRET: string;
   JWT_EXPIRES_IN: string;
+  SERVICE_API_KEY: string;
+  CHATBOT_SERVICE_URL: string;
+  GAMES_SERVICE_URL: string;
 }
 
 const getEnv = (): EnvVariables => {
@@ -21,7 +24,7 @@ const getEnv = (): EnvVariables => {
       throw new Error(`Variable de entorno requerida faltante: ${name}`);
     }
     return val;
-  };
+  }
 
   const getOptional = (name: string, fallback: string): string => {
     return process.env[name] || fallback;
@@ -48,6 +51,9 @@ const getEnv = (): EnvVariables => {
     DB_NAME: getOptional('DB_NAME', 'orientate_auth'),
     JWT_SECRET: getRequired('JWT_SECRET'),
     JWT_EXPIRES_IN: getOptional('JWT_EXPIRES_IN', '1d'),
+    SERVICE_API_KEY: getOptional('SERVICE_API_KEY', ''),
+    CHATBOT_SERVICE_URL: getOptional('CHATBOT_SERVICE_URL', 'http://localhost:8000'),
+    GAMES_SERVICE_URL: getOptional('GAMES_SERVICE_URL', 'http://localhost:4000'),
   };
 };
 
