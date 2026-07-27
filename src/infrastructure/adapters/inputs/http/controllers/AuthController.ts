@@ -475,9 +475,9 @@ export class AuthController {
       const userId = req.user.userId;
       const authorizationHeader = req.headers.authorization;
 
-      // 1. Fetch RIASEC and vocational profile from vocational-games-service
+      // 1. Fetch RIASEC and vocational test results from vocational-games-service
       let riasec: any = null;
-      let vocationalProfile: any = null;
+      let vocationalTestResult: any = null;
 
       try {
         const gamesResponse = await fetch(`${env.GAMES_SERVICE_URL}/api/v1/games/students/results`, {
@@ -517,7 +517,7 @@ export class AuthController {
                 'MUSICAL': 'Musical y Sonoro (Artístico)'
               };
 
-              vocationalProfile = {
+              vocationalTestResult = {
                 dominantTrait: top.key,
                 label: traitLabels[top.key] || top.key,
                 score: top.value,
@@ -529,7 +529,25 @@ export class AuthController {
         console.error('Error fetching games results:', gamesError);
       }
 
-      // 2. Fetch external factors from chatbot-service
+      // 2. Fetch student profile (registration data) from orientate-users-guidance-service
+      let vocationalProfile: any = null;
+
+      try {
+        const profileResponse = await fetch(`${env.GUIDANCE_SERVICE_URL}/api/v1/students/profile`, {
+          method: 'GET',
+          headers: {
+            'Authorization': authorizationHeader || '',
+          },
+        });
+
+        if (profileResponse.ok) {
+          vocationalProfile = await profileResponse.json();
+        }
+      } catch (profileError) {
+        console.error('Error fetching student profile:', profileError);
+      }
+
+      // 3. Fetch external factors from chatbot-service
       let externalFactors: any = null;
 
       try {
@@ -553,6 +571,7 @@ export class AuthController {
         statusCode: 200,
         data: {
           riasec,
+          vocationalTestResult,
           vocationalProfile,
           externalFactors,
         },
