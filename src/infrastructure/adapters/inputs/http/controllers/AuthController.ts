@@ -506,6 +506,15 @@ export class AuthController {
                 'S': 'Social (Servicio / Consultorio)',
                 'E': 'Emprendedor (Persuasivo / Negocios)',
                 'C': 'Convencional (Organización / Oficina)',
+                'MECANICO': 'Mecánico / Taller (Realista)',
+                'CIENTIFICO': 'Científico / Laboratorio (Investigador)',
+                'CALCULO': 'Cálculo (Investigador/Convencional)',
+                'BIOLOGICO': 'Biológico / Salud (Investigador/Social)',
+                'LITERARIO': 'Literario (Artístico/Social)',
+                'ARTISTICO': 'Artístico / Creativo (Artístico)',
+                'PERSUASIVO': 'Persuasivo / Liderazgo (Emprendedor)',
+                'SERVICIO_SOCIAL': 'Servicio Social / Humanidades (Social)',
+                'OFICINA': 'Oficina / Organización (Convencional)'
               };
 
               vocationalProfile = {
