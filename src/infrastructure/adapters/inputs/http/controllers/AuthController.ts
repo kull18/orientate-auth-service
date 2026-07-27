@@ -507,14 +507,14 @@ export class AuthController {
                 'E': 'Emprendedor (Persuasivo / Negocios)',
                 'C': 'Convencional (Organización / Oficina)',
                 'MECANICO': 'Mecánico / Taller (Realista)',
-                'CIENTIFICO': 'Científico / Laboratorio (Investigador)',
-                'CALCULO': 'Cálculo (Investigador/Convencional)',
-                'BIOLOGICO': 'Biológico / Salud (Investigador/Social)',
-                'LITERARIO': 'Literario (Artístico/Social)',
-                'ARTISTICO': 'Artístico / Creativo (Artístico)',
-                'PERSUASIVO': 'Persuasivo / Liderazgo (Emprendedor)',
+                'CIENTIFICO_FISICO': 'Científico Físico / Investigación (Investigador)',
+                'CIENTIFICO_BIOLOGICO': 'Científico Biológico / Salud (Investigador)',
+                'CALCULO': 'Cálculo y Análisis (Investigador/Convencional)',
                 'SERVICIO_SOCIAL': 'Servicio Social / Humanidades (Social)',
-                'OFICINA': 'Oficina / Organización (Convencional)'
+                'LITERARIO': 'Literario / Humanidades (Artístico/Social)',
+                'PERSUASIVO': 'Persuasivo / Liderazgo (Emprendedor)',
+                'ARTISTICO': 'Artístico y Creativo (Artístico)',
+                'MUSICAL': 'Musical y Sonoro (Artístico)'
               };
 
               vocationalProfile = {
